@@ -1,0 +1,12 @@
+node_modules/
+.env
+.env.local
+uploads/*
+!uploads/.gitkeep
+python-scripts/venv/
+.next/
+dist/
+*.pyc
+__pycache__/
+.DS_Store
+*.log
