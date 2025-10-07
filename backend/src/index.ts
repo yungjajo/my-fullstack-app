@@ -9,7 +9,7 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
-
+import os from 'os';
 
 dotenv.config();
 
@@ -20,6 +20,10 @@ const execAsync = promisify(exec);
 const app = express();
 const PORT = process.env.PORT || 3001;
 const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads';
+
+// Wykryj system operacyjny i wybierz odpowiednią komendę Python
+// Na Windows: python, na Mac/Linux: python3
+const PYTHON_CMD = os.platform() === 'win32' ? 'python' : 'python3';
 
 // Upewnij się, że folder uploads istnieje
 if (!fs.existsSync(UPLOAD_DIR)) {
@@ -85,7 +89,7 @@ const upload = multer({
 // Funkcja do uruchamiania skryptu Python
 async function runPythonScript(filePath: string): Promise<string> {
   const scriptPath = path.join(__dirname, '../../python-scripts/process_file.py');
-  const command = `python3 ${scriptPath} "${filePath}"`;
+  const command = `${PYTHON_CMD} ${scriptPath} "${filePath}"`;
   
   try {
     const { stdout, stderr } = await execAsync(command);
@@ -195,7 +199,7 @@ app.post('/api/flows', async (req, res) => {
     fs.writeFileSync(paramsPath, JSON.stringify(params));
 
     // Uruchom flows.py
-    const command = `python3 "${scriptPath}"`;
+    const command = `${PYTHON_CMD} "${scriptPath}"`;
     const { stdout, stderr } = await execAsync(command);
     if (stderr) {
       console.error('Python stderr:', stderr);

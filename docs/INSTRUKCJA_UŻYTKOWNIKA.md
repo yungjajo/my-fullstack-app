@@ -1,19 +1,30 @@
 # 📚 Instrukcja Użytkownika
 ## Narzędzie do Wizualizacji Przepływów Finansowych
 
+**Wersja:** 2.0 (Finalna)  
+**Data:** 7 października 2025  
+**Kompatybilność:** Windows, macOS, Linux
+
 ---
 
 ## 🎯 Cel Narzędzia
 
 To narzędzie służy do wizualizacji przepływów finansowych między podmiotami na podstawie historii transakcji z pliku CSV. Generuje grafiki wektorowe (SVG) przedstawiające diagram Sankey - typ wykresu idealny do prezentacji przepływu wartości między węzłami.
 
+**Dwie wersje dostępu:**
+1. **Standalone Python** - szybkie generowanie wykresów z linii komend
+2. **Aplikacja Webowa** - pełny interfejs graficzny z zakładkami i modalami
+
 ---
 
 ## 📋 Wymagania
 
 ### Minimalne wymagania techniczne:
-- **Python 3.6 lub nowszy** - sprawdź wersję: `python3 --version`
-- **Przeglądarka internetowa** (opcjonalnie dla interfejsu webowego)
+- **Python 3.9 lub nowszy** - sprawdź wersję:
+  - macOS/Linux: `python3 --version`
+  - Windows: `python --version`
+- **Node.js 18+ i npm** (tylko dla wersji webowej)
+- **Przeglądarka internetowa** (Chrome, Firefox, Safari, Edge)
 - **Plik CSV z danymi** o przepływach finansowych
 
 ### Wymagane biblioteki:
@@ -22,6 +33,10 @@ To narzędzie służy do wizualizacji przepływów finansowych między podmiotam
 - `json` - obsługa danych JSON  
 - `datetime` - operacje na datach
 - `collections` - struktury danych
+- `os` - operacje systemowe
+- `pathlib` - ścieżki plików
+
+**✅ ZERO zewnętrznych zależności dla wersji standalone!**
 
 ---
 
@@ -29,13 +44,13 @@ To narzędzie służy do wizualizacji przepływów finansowych między podmiotam
 
 ### Wymagane kolumny:
 
-| Kolumna | Opis | Przykład |
-|---------|------|----------|
-| **Nadawca** | Nazwa podmiotu wysyłającego | "Firma A" |
-| **Odbiorca** | Nazwa podmiotu odbierającego | "Firma B" |
-| **Kwota** | Wartość transakcji | 15000.50 lub "15 000,50" |
-| **Data** (opcjonalne) | Data transakcji | 2024-01-15 |
-| **Opis** (opcjonalne) | Opis transakcji | "Płatność za usługi" |
+| Kolumna | Opis | Przykład | Wymagane |
+|---------|------|----------|----------|
+| **Nadawca** | Nazwa podmiotu wysyłającego | "Firma A" | ✅ TAK |
+| **Odbiorca** | Nazwa podmiotu odbierającego | "Firma B" | ✅ TAK |
+| **Kwota** | Wartość transakcji | 15000.50 | ✅ TAK |
+| **Data** | Data transakcji | 2024-01-15 | ⚪ Nie (dla filtrowania) |
+| **Opis** | Opis transakcji | "Płatność za usługi" | ⚪ Nie |
 
 ### Przykładowy plik CSV:
 
@@ -48,325 +63,559 @@ Firma C,Firma D,5500.75,2024-02-10,Wynagrodzenie
 Firma A,Firma D,7800.00,2024-02-15,Konsulting
 ```
 
-### Ważne uwagi o formacie:
-- ✅ Pierwsza linia musi zawierać nagłówki kolumn
-- ✅ Separator: przecinek (`,`)
-- ✅ Kwoty mogą zawierać przecinek (`,`) lub kropkę (`.`) jako separator dziesiętny
-- ✅ Kwoty mogą zawierać spacje (zostaną usunięte automatycznie)
-- ✅ Data w formacie `YYYY-MM-DD` (rok-miesiąc-dzień)
-- ✅ Nazwy podmiotów mogą zawierać spacje i znaki specjalne
-- ✅ Kodowanie pliku: UTF-8 (dla polskich znaków)
+### Obsługiwane formaty kwot:
+- `15000.50` (kropka dziesiętna)
+- `15000,50` (przecinek dziesiętny)
+- `15 000.50` (spacje jako separator tysięcy)
+- `15 000,50` (spacje + przecinek)
+
+### Obsługiwane formaty dat:
+- `2024-01-15` (YYYY-MM-DD) ← ZALECANE
+- `2024/01/15` (YYYY/MM/DD)
+- `15-01-2024` (DD-MM-YYYY)
 
 ---
 
-## 🚀 Sposób 1: Skrypt Python (Standalone)
+## 🚀 Metoda 1: Standalone Python (Szybka)
 
-### Dla użytkowników z minimalną znajomością Pythona
+### Krok 1: Przygotuj plik CSV
 
-#### Krok 1: Przygotuj dane
-Utwórz plik `dane_transakcji.csv` w tym samym folderze co skrypt.
+Umieść swój plik CSV w folderze `python-scripts/` lub użyj przykładowego.
 
-#### Krok 2: Edytuj parametry
-Otwórz plik `flows_standalone.py` w edytorze tekstu i znajdź sekcję **PARAMETRY UŻYTKOWNIKA** (około linia 30):
+### Krok 2: Edytuj parametry (opcjonalnie)
+
+Otwórz plik `python-scripts/flows_standalone.py` i edytuj sekcję na początku:
 
 ```python
+# =============================================================================
 # PARAMETRY UŻYTKOWNIKA - EDYTUJ TĘ SEKCJĘ
+# =============================================================================
 
 # Ścieżka do pliku wejściowego CSV
-CSV_INPUT_FILE = 'dane_transakcji.csv'
+CSV_INPUT_FILE = 'dane_transakcji.csv'  # ← Zmień na swoją nazwę pliku
 
 # Ścieżka do pliku wyjściowego SVG
 SVG_OUTPUT_FILE = 'wykres_przeplywow.svg'
 
-# NAZWY KOLUMN w pliku CSV
-COLUMN_SENDER = 'Nadawca'
-COLUMN_RECEIVER = 'Odbiorca'
-COLUMN_AMOUNT = 'Kwota'
-COLUMN_DATE = 'Data'
+# NAZWY KOLUMN w pliku CSV (dostosuj do swojego pliku)
+COLUMN_SENDER = 'Nadawca'      # Kolumna z nadawcą
+COLUMN_RECEIVER = 'Odbiorca'   # Kolumna z odbiorcą
+COLUMN_AMOUNT = 'Kwota'        # Kolumna z kwotą
+COLUMN_DATE = 'Data'           # Kolumna z datą (opcjonalne)
 
-# FILTRY
-FILTER_ENTITIES = []              # np. ['Firma A', 'Firma B']
-FILTER_DATE_FROM = ''             # np. '2024-01-01'
-FILTER_DATE_TO = ''               # np. '2024-12-31'
+# FILTRY (pozostaw puste [] lub '' aby nie filtrować)
+FILTER_ENTITIES = []           # Przykład: ['Firma A', 'Firma B']
+FILTER_DATE_FROM = ''          # Przykład: '2024-01-01'
+FILTER_DATE_TO = ''            # Przykład: '2024-12-31'
 
 # PARAMETRY WIZUALIZACJI
-SVG_WIDTH = 800
-SVG_HEIGHT = 600
+SVG_WIDTH = 800               # Szerokość wykresu w pikselach
+SVG_HEIGHT = 600              # Wysokość wykresu w pikselach
+SVG_MARGIN = 100              # Margines dookoła wykresu
+NODE_WIDTH = 20               # Szerokość węzłów (pasków)
 ```
 
-#### Krok 3: Uruchom skrypt
+### Krok 3: Uruchom skrypt
+
+**macOS/Linux:**
 ```bash
 cd python-scripts
 python3 flows_standalone.py
 ```
 
-#### Krok 4: Zobacz wynik
-Otwórz plik `wykres_przeplywow.svg` w przeglądarce internetowej.
-
-### Przykłady dostosowania:
-
-**Zmiana nazw kolumn:**
-```python
-COLUMN_SENDER = 'From'           # Jeśli w CSV kolumna nazywa się 'From'
-COLUMN_RECEIVER = 'To'           # Jeśli w CSV kolumna nazywa się 'To'
-COLUMN_AMOUNT = 'Amount'         # Jeśli w CSV kolumna nazywa się 'Amount'
+**Windows:**
+```cmd
+cd python-scripts
+python flows_standalone.py
 ```
 
-**Filtrowanie według podmiotów:**
-```python
-FILTER_ENTITIES = ['Firma A', 'Firma B', 'Firma C']
+### Krok 4: Otwórz wygenerowany wykres
+
+**macOS:**
+```bash
+open wykres_przeplywow.svg
 ```
 
-**Filtrowanie według dat:**
-```python
-FILTER_DATE_FROM = '2024-01-01'
-FILTER_DATE_TO = '2024-06-30'
+**Windows:**
+```cmd
+start wykres_przeplywow.svg
 ```
 
-**Zmiana rozmiaru wykresu:**
-```python
-SVG_WIDTH = 1200    # Szerszy wykres
-SVG_HEIGHT = 800    # Wyższy wykres
+**Linux:**
+```bash
+xdg-open wykres_przeplywow.svg
 ```
+
+Lub po prostu kliknij dwukrotnie na plik `wykres_przeplywow.svg` w eksploratorze plików.
 
 ---
 
-## 🌐 Sposób 2: Aplikacja Webowa
+## 🌐 Metoda 2: Aplikacja Webowa (GUI)
 
-### Dla użytkowników preferujących interfejs graficzny
+### Krok 1: Instalacja (jednorazowa)
 
-#### Krok 1: Uruchom backend
+**macOS/Linux:**
+```bash
+# Backend
+cd backend
+npm install
+
+# Frontend
+cd ../frontend
+npm install
+
+# Python
+cd ../python-scripts
+pip3 install -r requirements.txt
+```
+
+**Windows:**
+```cmd
+# Backend
+cd backend
+npm install
+
+# Frontend
+cd ..\frontend
+npm install
+
+# Python
+cd ..\python-scripts
+pip install -r requirements.txt
+```
+
+### Krok 2: Uruchomienie
+
+Otwórz **DWA terminale** (lub dwie zakładki w terminalu):
+
+**Terminal 1 - Backend:**
 ```bash
 cd backend
-node --loader ts-node/esm src/index.ts
+npm run dev
 ```
-Backend będzie dostępny na: http://localhost:3001
 
-#### Krok 2: Uruchom frontend
+Poczekaj na: `🚀 Backend server running on http://localhost:3001`
+
+**Terminal 2 - Frontend:**
 ```bash
 cd frontend
 npm run dev
 ```
-Frontend będzie dostępny na: http://localhost:3000 lub http://localhost:3002
 
-#### Krok 3: Użyj aplikacji
-1. Otwórz przeglądarkę: http://localhost:3002
-2. Prześlij plik CSV
-3. Wybierz plik z listy dokumentów
-4. Wybierz filtry (podmioty, zakres dat)
-5. Kliknij "Wygeneruj Wykres Przepływów"
-6. Zobacz wykres Sankey po prawej stronie
+Poczekaj na: `✓ Ready in XXXms`
 
----
+### Krok 3: Otwórz w przeglądarce
 
-## 📊 Interpretacja Wykresu Sankey
-
-### Elementy wykresu:
-
-**Węzły (prostokąty):**
-- Reprezentują podmioty (firmy, osoby)
-- Po lewej: nadawcy
-- Po prawej: odbiorcy
-
-**Przepływy (krzywe):**
-- Reprezentują transfery pieniędzy
-- Szerokość = wielkość kwoty
-- Kolor: gradient niebiesko-fioletowy
-
-**Legenda:**
-- Maksymalna wartość przepływu
-- Liczba unikalnych przepływów
-- Suma wszystkich transakcji
-
-### Wskazówki do analizy:
-
-✅ **Grubsze przepływy** = większe kwoty  
-✅ **Położenie** = kierunek przepływu (lewo→prawo)  
-✅ **Tooltip** = najedź myszką aby zobaczyć szczegóły  
-
----
-
-## 🔧 Rozwiązywanie Problemów
-
-### Problem: "python: command not found"
-**Rozwiązanie:** Użyj `python3` zamiast `python`
-```bash
-python3 flows_standalone.py
+```
+http://localhost:3000
 ```
 
-### Problem: "Nie znaleziono pliku CSV"
-**Rozwiązanie:** Sprawdź:
-1. Czy plik istnieje w tym samym folderze co skrypt
-2. Czy nazwa pliku jest poprawna (uwaga na wielkość liter)
-3. Czy ścieżka w `CSV_INPUT_FILE` jest poprawna
+### Krok 4: Używanie Interfejsu
 
-### Problem: "Brak danych po filtrowaniu"
+#### **Zakładka "Rejestr Dokumentów Finansowych"**
+
+1. **Dodawanie dokumentu:**
+   - Kliknij "Wybierz plik"
+   - Wybierz plik CSV z dysku (lub z folderu `przyklady_csv/`)
+   - Kliknij "Wyślij"
+   - Plik zostanie automatycznie przetworzony
+
+2. **Przeglądanie dokumentów:**
+   - Lista wszystkich wgranych plików
+   - Każdy plik pokazuje:
+     - Nazwę pliku
+     - Rozmiar
+     - Datę dodania
+
+3. **Akcje na dokumentach:**
+   - **Ikona "i"** - Wyświetla szczegóły pliku w modalu:
+     - Data dodania
+     - Liczba wpisów
+     - Liczba unikalnych firm
+     - Liczba transakcji
+   - **Ikona kosza** - Usuwa dokument:
+     - Pojawi się modal z prośbą o potwierdzenie
+     - Kliknij "Usuń" aby potwierdzić
+     - Lub "Anuluj" aby wrócić
+
+#### **Zakładka "Diagram Przepływów"**
+
+1. **Jeśli nie ma dokumentów:**
+   - Zobaczysz komunikat: "Brak dokumentów do przetwarzania..."
+   - Kliknij przycisk "Przejdź do zakładki Rejestr dokumentów..."
+
+2. **Generowanie diagramu:**
+   - **(Opcjonalnie)** Ustaw datę początkową i końcową
+   - **(Opcjonalnie)** Wybierz konkretne podmioty z listy
+   - Kliknij **"Wygeneruj Diagram"**
+   - Wykres Sankey pojawi się poniżej
+
+3. **Podsumowanie:**
+   - Pod wykresem zobaczysz tabelę z:
+     - Liczba przetworzonych dokumentów
+     - Liczba unikalnych firm
+     - Liczba transakcji
+   - To podsumowanie generuje się automatycznie po wygenerowaniu wykresu
+
+4. **Czyszczenie filtrów:**
+   - Kliknij **"Wyczyść wszystko"** aby zresetować filtry
+
+---
+
+## 📊 Przykłady Użycia
+
+### Przykład 1: Wizualizacja wszystkich przepływów
+
+**Standalone Python:**
+```python
+# W flows_standalone.py
+CSV_INPUT_FILE = 'dane_transakcji.csv'
+FILTER_ENTITIES = []        # Brak filtrowania
+FILTER_DATE_FROM = ''
+FILTER_DATE_TO = ''
+```
+
+**Aplikacja Webowa:**
+1. Wgraj plik CSV
+2. Przejdź do zakładki "Diagram Przepływów"
+3. Kliknij "Wygeneruj Diagram" (bez ustawiania filtrów)
+
+### Przykład 2: Filtrowęnie według firm
+
+**Standalone Python:**
+```python
+# W flows_standalone.py
+FILTER_ENTITIES = ['Firma A', 'Firma B', 'Firma C']
+```
+
+**Aplikacja Webowa:**
+1. W zakładce "Diagram Przepływów"
+2. W sekcji "Wybierz podmioty" zaznacz: Firma A, Firma B, Firma C
+3. Kliknij "Wygeneruj Diagram"
+
+### Przykład 3: Filtrowanie według zakresu dat
+
+**Standalone Python:**
+```python
+# W flows_standalone.py
+FILTER_DATE_FROM = '2024-01-01'
+FILTER_DATE_TO = '2024-06-30'
+```
+
+**Aplikacja Webowa:**
+1. W zakładce "Diagram Przepływów"
+2. Ustaw "Data od": 2024-01-01
+3. Ustaw "Data do": 2024-06-30
+4. Kliknij "Wygeneruj Diagram"
+
+### Przykład 4: Kombinacja filtrów
+
+**Standalone Python:**
+```python
+# W flows_standalone.py
+FILTER_ENTITIES = ['Firma A', 'Firma B']
+FILTER_DATE_FROM = '2024-03-01'
+FILTER_DATE_TO = '2024-03-31'
+```
+
+**Aplikacja Webowa:**
+1. Zaznacz firmy: Firma A, Firma B
+2. Ustaw daty: 2024-03-01 do 2024-03-31
+3. Kliknij "Wygeneruj Diagram"
+
+---
+
+## 📂 Przykładowe Dane
+
+W folderze `przyklady_csv/` znajdziesz **10 gotowych przykładów**:
+
+| Plik | Opis | Firmy | Transakcje |
+|------|------|-------|------------|
+| `01_lancuch_dostaw.csv` | Łańcuch dostaw w produkcji | 6 | 15 |
+| `02_ekosystem_startupowy.csv` | Finansowanie startupów | 7 | 15 |
+| `03_platforma_ecommerce.csv` | E-commerce | 7 | 15 |
+| `04_agencja_kreatywna.csv` | Agencja reklamowa | 6 | 15 |
+| `05_sektor_energetyczny.csv` | Handel energią | 6 | 15 |
+| `06_ekosystem_edukacyjny.csv` | Edukacja | 7 | 15 |
+| `07_eksport_import.csv` | Handel międzynarodowy | 6 | 15 |
+| `08_siec_franczyzowa.csv` | Franczyzy | 5 | 15 |
+| `09_fundusz_inwestycyjny.csv` | Fundusze VC | 6 | 15 |
+| `10_platforma_streamingowa.csv` | Streaming muzyczny | 6 | 15 |
+
+**Każdy plik zawiera realistyczne dane do testowania różnych scenariuszy biznesowych!**
+
+---
+
+## 🐛 Rozwiązywanie Problemów
+
+### Problem 1: Python nie działa
+
+**Objaw:**
+```
+python: command not found
+```
+
+**Rozwiązanie (macOS/Linux):**
+```bash
+# Sprawdź czy Python jest zainstalowany
+python3 --version
+
+# Jeśli nie, zainstaluj:
+# macOS:
+brew install python3
+
+# Linux (Ubuntu/Debian):
+sudo apt update
+sudo apt install python3 python3-pip
+```
+
+**Rozwiązanie (Windows):**
+1. Pobierz Python z https://www.python.org/downloads/
+2. Podczas instalacji zaznacz "Add Python to PATH"
+3. Zrestartuj terminal
+4. Sprawdź: `python --version`
+
+---
+
+### Problem 2: Backend nie uruchamia się
+
+**Objaw:**
+```
+Error: listen EADDRINUSE: address already in use :::3001
+```
+
+**Rozwiązanie (macOS/Linux):**
+```bash
+# Znajdź proces na porcie 3001
+lsof -i :3001
+
+# Zabij proces
+kill -9 <PID>
+```
+
+**Rozwiązanie (Windows):**
+```cmd
+# Znajdź proces
+netstat -ano | findstr :3001
+
+# Zabij proces
+taskkill /PID <PID> /F
+```
+
+---
+
+### Problem 3: Frontend nie łączy się z backendem
+
+**Objaw:**
+```
+AxiosError: Network Error
+```
+
 **Rozwiązanie:**
-1. Usuń filtry (ustaw puste wartości: `[]` i `''`)
-2. Sprawdź czy nazwy podmiotów w filtrach są identyczne jak w CSV
-3. Sprawdź format dat (musi być `YYYY-MM-DD`)
+1. Upewnij się, że backend działa (Terminal 1): `🚀 Backend server running...`
+2. Sprawdź czy port 3001 jest otwarty: http://localhost:3001
+3. Zrestartuj oba serwery (backend i frontend)
+4. Wyczyść cache przeglądarki (Ctrl+Shift+R lub Cmd+Shift+R)
 
-### Problem: "Wykres jest pusty"
-**Rozwiązanie:** Sprawdź czy:
-1. Kolumna z kwotą zawiera liczby (nie tekst)
-2. Kolumny Nadawca i Odbiorca zawierają dane
-3. Nazwy kolumn w parametrach odpowiadają nazwom w pliku CSV
+---
 
-### Problem: "Błąd kodowania (polskie znaki)"
-**Rozwiązanie:** Zapisz plik CSV w kodowaniu UTF-8:
-- W Excelu: "Zapisz jako" → "CSV UTF-8 (rozdzielany przecinkami)"
-- W Notatniku: "Zapisz jako" → Kodowanie: UTF-8
+### Problem 4: Wykres SVG nie generuje się
+
+**Objaw (standalone):**
+```
+FileNotFoundError: [Errno 2] No such file or directory: 'dane_transakcji.csv'
+```
+
+**Rozwiązanie:**
+1. Sprawdź czy plik CSV istnieje w folderze `python-scripts/`
+2. Sprawdź poprawność nazwy pliku w `CSV_INPUT_FILE`
+3. Użyj pełnej ścieżki: `CSV_INPUT_FILE = '/pelna/sciezka/do/pliku.csv'`
+
+**Objaw (webowa):**
+```
+Error: SVG file not generated
+```
+
+**Rozwiązanie:**
+1. Sprawdź logi backendu w terminalu
+2. Upewnij się że plik `python-scripts/flows.py` istnieje
+3. Sprawdź czy Python jest dostępny: `python3 --version` (Mac) lub `python --version` (Win)
+
+---
+
+### Problem 5: Plik CSV nie wczytuje się
+
+**Objaw:**
+```
+CSV must contain Nadawca and Odbiorca columns
+```
+
+**Rozwiązanie:**
+1. Sprawdź czy pierwszy wiersz zawiera nazwy kolumn
+2. Upewnij się że są kolumny "Nadawca" i "Odbiorca" (lub zmień nazwy w parametrach)
+3. Sprawdź kodowanie pliku (powinno być UTF-8)
+
+**Przykład poprawnego pliku:**
+```csv
+Nadawca,Odbiorca,Kwota,Data,Opis
+Firma A,Firma B,1000,2024-01-01,Test
+```
+
+---
+
+### Problem 6: TypeScript errors w backendie
+
+**Objaw:**
+```
+TypeError [ERR_UNKNOWN_FILE_EXTENSION]: Unknown file extension ".ts"
+```
+
+**Rozwiązanie:**
+```bash
+cd backend
+rm -rf node_modules package-lock.json
+npm install
+npm run dev
+```
+
+---
+
+### Problem 7: Modal się nie otwiera
+
+**Objaw:**
+Kliknięcie ikony "i" lub kosza nie pokazuje modalu.
+
+**Rozwiązanie:**
+1. Sprawdź konsolę przeglądarki (F12) dla błędów
+2. Wyczyść cache przeglądarki (Ctrl+Shift+R)
+3. Zrestartuj frontend
+4. Użyj innej przeglądarki (Chrome, Firefox)
 
 ---
 
 ## 💡 Najlepsze Praktyki
 
-### Przygotowanie danych:
-1. ✅ Upewnij się, że wszystkie kwoty są liczbami
-2. ✅ Usuń puste wiersze z CSV
-3. ✅ Używaj spójnych nazw podmiotów (bez literówek)
-4. ✅ Daty w jednolitym formacie
-5. ✅ Backup oryginalnych danych przed modyfikacją
+### 1. Przygotowanie danych CSV
+- ✅ Używaj UTF-8 encoding
+- ✅ Pierwszy wiersz = nazwy kolumn
+- ✅ Kwoty jako liczby (bez symboli walut)
+- ✅ Daty w formacie YYYY-MM-DD
+- ❌ Unikaj pustych wierszy
+- ❌ Unikaj specjalnych znaków w nazwach firm
 
-### Tworzenie wykresów:
-1. ✅ Zacznij od wykresu bez filtrów (całość danych)
-2. ✅ Następnie stosuj filtry aby skupić się na interesujących podmiotach
-3. ✅ Użyj filtrów dat aby zobaczyć zmiany w czasie
-4. ✅ Zapisuj wygenerowane wykresy z opisowymi nazwami
-5. ✅ Porównuj różne okresy lub grupy podmiotów
+### 2. Optymalizacja wykresów
+- Dla dużych zbiorów danych (>100 transakcji):
+  - Użyj filtrów według firm
+  - Użyj filtrów według dat
+  - Podziel dane na mniejsze pliki
 
-### Dokumentacja:
-1. ✅ Zapisz parametry użyte do stworzenia wykresu
-2. ✅ Dodaj opis do nazwy pliku SVG (np. `wykres_Q1_2024.svg`)
-3. ✅ Przechowuj oryginalne pliki CSV razem z wykresami
+### 3. Organizacja plików
+- Przechowuj pliki CSV w dedykowanym folderze
+- Używaj opisowych nazw: `transakcje_2024_Q1.csv`
+- Twórz kopie zapasowe przed modyfikacją
+
+### 4. Wydajność
+- **Standalone Python:** Najszybsze dla dużych plików
+- **Aplikacja Webowa:** Najlepsze dla interaktywnej analizy
 
 ---
 
-## 📖 Przykłady Użycia
+## 📖 Dla Uczących Się Programowania
 
-### Przykład 1: Analiza całości przepływów
+### Jak działa skrypt Python?
 
-**Cel:** Zobacz wszystkie przepływy bez ograniczeń
+1. **Wczytanie danych** (funkcja `load_csv_data`):
+   ```python
+   with open(csv_path, 'r', encoding='utf-8') as f:
+       reader = csv.DictReader(f)
+       data = list(reader)
+   ```
 
-**Parametry:**
+2. **Filtrowanie** (funkcja `filter_data`):
+   ```python
+   if entities:
+       filtered = [row for row in data if row[sender_col] in entities or row[receiver_col] in entities]
+   ```
+
+3. **Agregacja** (funkcja `aggregate_flows`):
+   ```python
+   flows = defaultdict(float)
+   for row in data:
+       key = (row[sender_col], row[receiver_col])
+       flows[key] += amount
+   ```
+
+4. **Generowanie SVG** (funkcja `generate_sankey_svg`):
+   ```python
+   svg = f'<svg width="{width}" height="{height}">'
+   # ... rysowanie węzłów i przepływów
+   svg += '</svg>'
+   ```
+
+### Modyfikacje dla zaawansowanych
+
+#### Zmiana kolorów przepływów:
 ```python
-CSV_INPUT_FILE = 'transakcje_2024.csv'
-SVG_OUTPUT_FILE = 'wszystkie_przeplyw.svg'
-FILTER_ENTITIES = []
-FILTER_DATE_FROM = ''
-FILTER_DATE_TO = ''
+# W funkcji generate_sankey_svg, linia ~350
+flow_color = f'rgba(66, 135, 245, {opacity})'  # Niebieski
+# Zmień na:
+flow_color = f'rgba(245, 66, 66, {opacity})'   # Czerwony
+flow_color = f'rgba(66, 245, 135, {opacity})'  # Zielony
 ```
 
----
-
-### Przykład 2: Analiza konkretnych firm
-
-**Cel:** Sprawdź przepływy między wybranymi firmami
-
-**Parametry:**
+#### Dodanie nowych filtrów (np. kwota minimalna):
 ```python
-CSV_INPUT_FILE = 'transakcje_2024.csv'
-SVG_OUTPUT_FILE = 'firmy_ABC.svg'
-FILTER_ENTITIES = ['Firma A', 'Firma B', 'Firma C']
-FILTER_DATE_FROM = ''
-FILTER_DATE_TO = ''
-```
+# Dodaj w sekcji PARAMETRY
+MIN_AMOUNT = 1000
 
----
-
-### Przykład 3: Analiza kwartalna
-
-**Cel:** Przeanalizuj jeden kwartał
-
-**Parametry:**
-```python
-CSV_INPUT_FILE = 'transakcje_2024.csv'
-SVG_OUTPUT_FILE = 'Q1_2024.svg'
-FILTER_ENTITIES = []
-FILTER_DATE_FROM = '2024-01-01'
-FILTER_DATE_TO = '2024-03-31'
-```
-
----
-
-### Przykład 4: Fokus na jednej firmie
-
-**Cel:** Zobacz tylko transakcje związane z jedną firmą
-
-**Parametry:**
-```python
-CSV_INPUT_FILE = 'transakcje_2024.csv'
-SVG_OUTPUT_FILE = 'firma_A_analiza.svg'
-FILTER_ENTITIES = ['Firma A']
-FILTER_DATE_FROM = ''
-FILTER_DATE_TO = ''
+# W funkcji filter_data, dodaj:
+if MIN_AMOUNT:
+    filtered = [row for row in filtered if float(row[amount_col]) >= MIN_AMOUNT]
 ```
 
 ---
 
 ## 📞 Wsparcie
 
-### Częste pytania:
+**Więcej informacji:**
+- **README.md** - Ogólna dokumentacja projektu
+- **START_TUTAJ.md** - Szybki start
+- **ZGODNOŚĆ_Z_WYMAGANIAMI_KONKURSU.md** - Analiza wymagań
 
-**Q: Czy mogę używać tego narzędzia komercyjnie?**  
-A: Tak, narzędzie jest bezpłatne i używa tylko bezpłatnych bibliotek.
-
-**Q: Jak duże pliki mogę przetwarzać?**  
-A: Narzędzie radzi sobie z tysiącami rekordów. Dla bardzo dużych plików (>100k rekordów) używaj filtrów.
-
-**Q: Czy mogę zmienić kolory wykresu?**  
-A: Tak, edytuj sekcję "Gradient dla przepływów" w funkcji `generate_sankey_svg()`.
-
-**Q: Czy wykres jest interaktywny?**  
-A: Tak, tooltip pokazuje szczegóły po najechaniu myszką.
-
-**Q: Jak eksportować wykres do PDF/PNG?**  
-A: Otwórz SVG w przeglądarce i użyj funkcji "Drukuj" → "Zapisz jako PDF".
+**W razie problemów:**
+1. Sprawdź sekcję "Rozwiązywanie Problemów" powyżej
+2. Przeczytaj README.md
+3. Sprawdź logi w terminalach (backend i frontend)
 
 ---
 
-## 🎓 Dla Osób Uczących Się Python
+## ✅ Checklist przed użyciem
 
-### Jak modyfikować kod:
+**Instalacja (jednorazowa):**
+- [ ] Python 3.9+ zainstalowany
+- [ ] Node.js 18+ zainstalowany (jeśli webowa)
+- [ ] Zależności zainstalowane (`npm install`, `pip install`)
 
-**1. Dodaj nową kolumnę do analizy:**
-```python
-# W funkcji parse_csv() dodaj logikę do przetworzenia nowej kolumny
-COLUMN_CATEGORY = 'Kategoria'  # Nowy parametr
-```
+**Przygotowanie danych:**
+- [ ] Plik CSV przygotowany
+- [ ] Zawiera wymagane kolumny (Nadawca, Odbiorca, Kwota)
+- [ ] Encoding UTF-8
+- [ ] Daty w formacie YYYY-MM-DD
 
-**2. Zmień kolory w wykresie:**
-```python
-# W generate_sankey_svg() znajdź sekcję <linearGradient>
-'<stop offset="0%" style="stop-color:rgb(255,0,0);stop-opacity:0.6" />'  # Czerwony
-```
+**Uruchomienie:**
+- [ ] Backend działa (jeśli webowa)
+- [ ] Frontend działa (jeśli webowa)
+- [ ] Plik CSV w odpowiednim folderze
 
-**3. Dodaj dodatkowe statystyki:**
-```python
-# W funkcji main() dodaj przed print("PODSUMOWANIE:")
-średnia = total_value / len(aggregated)
-print(f"  • Średnia wartość przepływu: {średnia:,.2f}")
-```
-
-**4. Eksportuj dane do JSON:**
-```python
-import json
-with open('statystyki.json', 'w') as f:
-    json.dump(aggregated, f, indent=2)
-```
+**Generowanie wykresu:**
+- [ ] Parametry ustawione (standalone) lub filtry wybrane (webowa)
+- [ ] Kliknięto "Wygeneruj Diagram" (webowa)
+- [ ] Wykres SVG wygenerowany i widoczny
 
 ---
 
-## 📝 Changelog
+**Powodzenia w analizie przepływów finansowych! 📊💰**
 
-**Wersja 1.0** (Październik 2025)
-- ✅ Podstawowa funkcjonalność wizualizacji Sankey
-- ✅ Filtrowanie według podmiotów i dat
-- ✅ Interfejs webowy
-- ✅ Standalone skrypt Python
-- ✅ Pełna dokumentacja
-
----
-
-**Powodzenia w analizowaniu przepływów finansowych! 📊💰**
-
+**Wersja:** 2.0 (Finalna)  
+**Data:** 7 października 2025  
+**Status:** ✅ Kompletna instrukcja

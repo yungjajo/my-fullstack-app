@@ -1,37 +1,76 @@
 # 🚀 START TUTAJ - Szybki Start
 
 ## 📊 Aplikacja do Wizualizacji Przepływów Finansowych
-### Zadanie konkursowe - Gotowe do zgłoszenia! ✅
+
+**Wersja:** 2.0  
+**Status:** ✅ W pełni funkcjonalna  
+**Kompatybilność:** Windows, macOS, Linux
 
 ---
 
-## ⚡ Szybki Test (30 sekund)
+## ⚡ Szybki Test (2 metody)
 
-### Metoda 1: Standalone Python (najszybsza)
+### Metoda 1: Standalone Python (najszybsza - 30 sekund)
 
 ```bash
 # 1. Przejdź do folderu ze skryptami
 cd python-scripts
 
 # 2. Uruchom skrypt (używa przygotowanego pliku przykładowego)
+# macOS/Linux:
 python3 flows_standalone.py
 
+# Windows:
+python flows_standalone.py
+
 # 3. Otwórz wygenerowany wykres
+# macOS:
 open wykres_przeplywow.svg
-# lub kliknij dwukrotnie na plik wykres_przeplywow.svg
+# Windows:
+start wykres_przeplywow.svg
+# Linux:
+xdg-open wykres_przeplywow.svg
 ```
 
 **✅ Gotowe! Wykres Sankey został wygenerowany!**
 
 ---
 
-### Metoda 2: Aplikacja Webowa (pełny interfejs)
+### Metoda 2: Aplikacja Webowa (pełny interfejs GUI)
+
+**Wymagania wstępne:**
+- Node.js v18+ (sprawdź: `node --version`)
+- Python 3.9+ (sprawdź: `python3 --version` lub `python --version`)
+
+**KROK 1: Instalacja zależności** (raz przy pierwszym uruchomieniu)
+
+```bash
+# Backend
+cd backend
+npm install
+
+# Frontend
+cd ../frontend
+npm install
+
+# Python (macOS/Linux)
+cd ../python-scripts
+pip3 install -r requirements.txt
+
+# Python (Windows)
+cd ..\python-scripts
+pip install -r requirements.txt
+```
+
+**KROK 2: Uruchomienie aplikacji** (dwa terminale)
 
 **Terminal 1 - Backend:**
 ```bash
 cd backend
-node --loader ts-node/esm src/index.ts
+npm run dev
 ```
+
+Poczekaj na komunikat: `🚀 Backend server running on http://localhost:3001`
 
 **Terminal 2 - Frontend:**
 ```bash
@@ -39,27 +78,53 @@ cd frontend
 npm run dev
 ```
 
-**Otwórz przeglądarkę:** http://localhost:3002
+Poczekaj na komunikat: `✓ Ready in XXXms`
+
+**KROK 3: Otwórz w przeglądarce:**
+
+```
+http://localhost:3000
+```
+
+**✅ Aplikacja działa!** 🎉
+
+---
+
+## 🎯 Funkcje Aplikacji
+
+### Zakładka "Diagram Przepływów"
+- 📊 Wykres Sankey na pełną szerokość
+- 📅 Filtry zakresu dat (Od/Do)
+- 🏢 Filtry według podmiotów
+- 📈 Podsumowanie: liczba dokumentów, firm, transakcji
+- 🎨 Profesjonalna wizualizacja SVG
+
+### Zakładka "Rejestr Dokumentów Finansowych"
+- 📁 Lista wszystkich dokumentów w systemie
+- ➕ Wgrywanie nowych plików CSV
+- 🗑️ Usuwanie dokumentów (z potwierdzeniem)
+- ℹ️ Szczegóły plików (data dodania, liczba wpisów, firm, transakcji)
+- 📊 Licznik dokumentów w rejestrze
 
 ---
 
 ## 📚 Dokumentacja
 
-Przeczytaj w tej kolejności:
+**Przeczytaj w tej kolejności:**
 
-1. **ZGODNOŚĆ_Z_WYMAGANIAMI_KONKURSU.md** ⭐ WAŻNE!
+1. **README.md** ⭐ START
+   - Kompletna instrukcja krok po kroku
+   - Instalacja dla świeżego repozytorium
+   - Rozwiązywanie problemów Windows/Mac/Linux
+
+2. **ZGODNOŚĆ_Z_WYMAGANIAMI_KONKURSU.md**
    - Weryfikacja zgodności z wymaganiami (100%)
    - Dowody spełnienia wszystkich punktów
 
-2. **INSTRUKCJA_UŻYTKOWNIKA.md**
+3. **INSTRUKCJA_UŻYTKOWNIKA.md**
    - Jak używać narzędzia
    - Format plików CSV
    - Przykłady użycia
-
-3. **README.md**
-   - Ogólny opis projektu
-   - Instrukcje instalacji
-   - Dokumentacja API
 
 4. **POPRAWKI_I_ZMIANY.md**
    - Historia zmian
@@ -67,108 +132,124 @@ Przeczytaj w tej kolejności:
 
 ---
 
-## 🎯 Kluczowe Pliki dla Konkursu
+## 📂 Przykładowe Dane
+
+W folderze `przyklady_csv/` znajdziesz **10 różnorodnych przykładów** CSV:
+
+```
+przyklady_csv/
+├── 01_lancuch_dostaw.csv          # Łańcuch dostaw w produkcji
+├── 02_ekosystem_startupowy.csv    # Finansowanie startupów VC
+├── 03_platforma_ecommerce.csv     # Przepływy e-commerce
+├── 04_agencja_kreatywna.csv       # Agencja reklamowa
+├── 05_sektor_energetyczny.csv     # Handel energią
+├── 06_ekosystem_edukacyjny.csv    # Edukacja i szkolenia
+├── 07_eksport_import.csv          # Handel międzynarodowy
+├── 08_siec_franczyzowa.csv        # Franczyzy gastronomiczne
+├── 09_fundusz_inwestycyjny.csv    # Fundusze VC i startupy
+└── 10_platforma_streamingowa.csv  # Streaming muzyczny
+```
+
+**Jak użyć przykładów:**
+1. Otwórz aplikację webową
+2. Przejdź do zakładki "Rejestr Dokumentów Finansowych"
+3. Kliknij "Wybierz plik" i wybierz dowolny plik z folderu `przyklady_csv/`
+4. Kliknij "Wyślij"
+5. Przejdź do zakładki "Diagram Przepływów"
+6. Kliknij "Wygeneruj Diagram"
+
+---
+
+## 🔑 Kluczowe Pliki
 
 ### Do zaprezentowania:
 
-✅ **python-scripts/flows_standalone.py** (450 linii)
+✅ **python-scripts/flows_standalone.py** (450+ linii)
 - Główny skrypt - W PEŁNI SKOMENTOWANY
 - Sekcja PARAMETRY UŻYTKOWNIKA na początku
-- ZERO zewnętrznych zależności
+- ZERO zewnętrznych zależności (tylko standardowe biblioteki Python)
 
-✅ **ZGODNOŚĆ_Z_WYMAGANIAMI_KONKURSU.md**
-- Analiza spełnienia wymagań (21/21 = 100%)
+✅ **przyklady_csv/** (10 plików)
+- Różnorodne scenariusze biznesowe
+- Gotowe do wgrania i testowania
 
-✅ **INSTRUKCJA_UŻYTKOWNIKA.md**
-- Dokumentacja dla użytkowników
-- Przykłady użycia
+✅ **backend/src/index.ts** (220 linii)
+- Backend API z automatyczną detekcją systemu (Windows/Mac)
+- REST endpoints dla frontendu
 
-✅ **dane_transakcji_przyklad.csv**
-- Przykładowe dane testowe
+✅ **frontend/app/components/FileUpload.tsx** (577 linii)
+- Nowoczesny interfejs z zakładkami
+- React 19 + TypeScript + Tailwind
 
-✅ **python-scripts/wykres_przeplywow.svg**
-- Przykładowy wygenerowany wykres
+✅ **Dokumentacja** (4 pliki .md)
+- README.md - Kompletna instrukcja
+- ZGODNOŚĆ_Z_WYMAGANIAMI_KONKURSU.md - Analiza zgodności
+- INSTRUKCJA_UŻYTKOWNIKA.md - Przewodnik użytkownika
+- POPRAWKI_I_ZMIANY.md - Historia rozwoju
 
 ---
 
 ## ✨ Co wyróżnia to rozwiązanie?
 
-### 1. **100% Zgodność z Wymaganiami**
-- ✅ Wszystkie 21 wymagań spełnionych
-- ✅ Python z bezpłatnymi bibliotekami
-- ✅ Pełna dokumentacja
-- ✅ Łatwa modyfikacja parametrów
+### 1. **Kompatybilność Cross-Platform**
+- ✅ Windows, macOS, Linux
+- ✅ Automatyczna detekcja systemu operacyjnego
+- ✅ Uniwersalne komendy Python (`python` vs `python3`)
 
-### 2. **Profesjonalna Jakość**
-- ✅ 1515 linii dokumentacji
-- ✅ 150+ linii komentarzy w kodzie
-- ✅ 4 dokumenty markdown
+### 2. **Profesjonalny Interfejs Użytkownika**
+- ✅ Zakładki: Diagram + Rejestr
+- ✅ Modalne okna potwierdzenia
+- ✅ Informacje o plikach (ikona "i")
+- ✅ Responsywny design
 
-### 3. **Dwie Wersje**
-- ✅ Standalone Python (CLI)
-- ✅ Aplikacja webowa (GUI)
-
-### 4. **Wizualizacja Sankey**
-- ✅ Grafika wektorowa SVG
-- ✅ Interaktywne tooltipy
-- ✅ Profesjonalne kolory
-
-### 5. **Zaawansowane Funkcje**
-- ✅ Filtrowanie według podmiotów
-- ✅ Filtrowanie według dat
+### 3. **Zaawansowane Funkcje**
+- ✅ Filtrowanie według podmiotów i dat
 - ✅ Agregacja przepływów
 - ✅ Automatyczne rozmieszczenie węzłów
+- ✅ Podsumowania statystyczne
+
+### 4. **Dwie Wersje**
+- ✅ Standalone Python (CLI) - szybkie generowanie
+- ✅ Aplikacja webowa (GUI) - pełny interfejs
+
+### 5. **Jakość Kodu**
+- ✅ Zero duplikatów
+- ✅ Zoptymalizowany kod
+- ✅ Pełne komentarze
+- ✅ TypeScript + ESLint
 
 ---
 
-## 📊 Specyfikacja Techniczna
+## 🛠️ Specyfikacja Techniczna
 
-**Język:** Python 3.6+  
-**Biblioteki:** TYLKO standardowe (csv, json, datetime, collections, os)  
-**Format wejściowy:** CSV  
-**Format wyjściowy:** SVG (wektorowy)  
-**Typ wykresu:** Sankey diagram  
+### Backend:
+- **Node.js** 18+
+- **Express** 5.1.0 (ESM)
+- **TypeScript** 5.9+
+- **Multer** 2.0 (upload plików)
 
-**Wymagany format CSV:**
-```csv
-Nadawca,Odbiorca,Kwota,Data,Opis
-Firma A,Firma B,15000.50,2024-01-15,Płatność
-```
+### Frontend:
+- **Next.js** 15.5.4 (Turbopack)
+- **React** 19.1.0
+- **TypeScript** 5+
+- **Tailwind CSS** 4
 
----
+### Python:
+- **Python** 3.9+
+- **Biblioteki:** TYLKO standardowe (csv, json, datetime, collections, os)
 
-## 🎓 Dla Jury Konkursowego
-
-### Punkty do weryfikacji:
-
-1. **Zgodność z wymaganiami** ✅
-   - Patrz: `ZGODNOŚĆ_Z_WYMAGANIAMI_KONKURSU.md`
-
-2. **Jakość kodu** ✅
-   - Patrz: `python-scripts/flows_standalone.py`
-   - Linie 1-80: Dokumentacja i komentarze
-   - Linie 23-54: Sekcja PARAMETRY UŻYTKOWNIKA
-
-3. **Dokumentacja** ✅
-   - 4 pliki markdown (1515 linii)
-   - Instrukcje, przykłady, rozwiązywanie problemów
-
-4. **Funkcjonalność** ✅
-   - Test: `cd python-scripts && python3 flows_standalone.py`
-   - Wygeneruje wykres SVG w < 1 sekunda
-
-5. **Łatwość użycia** ✅
-   - Wszystkie parametry w jednym miejscu
-   - Jasne nazwy zmiennych
-   - Szczegółowe komentarze
+### Format Danych:
+- **Wejście:** CSV
+- **Wyjście:** SVG (grafika wektorowa)
+- **Typ wykresu:** Sankey diagram
 
 ---
 
-## 💡 Szybkie Modyfikacje (dla oceniających)
+## 💡 Szybkie Modyfikacje
 
-### Zmień plik wejściowy:
+### Zmień plik wejściowy (flows_standalone.py):
 ```python
-# W flows_standalone.py, linia ~33
+# Linia ~33
 CSV_INPUT_FILE = 'twoj_plik.csv'
 ```
 
@@ -194,35 +275,76 @@ SVG_HEIGHT = 800
 
 ---
 
+## 🐛 Rozwiązywanie Problemów
+
+### Backend nie uruchamia się (Port zajęty)
+
+**macOS/Linux:**
+```bash
+lsof -i :3001
+kill -9 <PID>
+```
+
+**Windows:**
+```cmd
+netstat -ano | findstr :3001
+taskkill /PID <PID> /F
+```
+
+### Python nie działa
+
+**macOS/Linux:**
+```bash
+python3 --version
+pip3 install -r requirements.txt
+```
+
+**Windows:**
+```cmd
+python --version
+pip install -r requirements.txt
+```
+
+### TypeScript errors
+
+```bash
+cd backend
+rm -rf node_modules package-lock.json
+npm install
+```
+
+---
+
 ## 📞 Wsparcie
 
 **Wszelkie pytania?** Zobacz:
-- `INSTRUKCJA_UŻYTKOWNIKA.md` - Sekcja "Rozwiązywanie problemów"
 - `README.md` - Sekcja "Rozwiązywanie problemów"
+- `INSTRUKCJA_UŻYTKOWNIKA.md` - Szczegółowe instrukcje
 
 ---
 
 ## 🏆 Status Projektu
 
-✅ **GOTOWE DO ZGŁOSZENIA NA KONKURS**
+✅ **GOTOWE DO UŻYCIA**
 
 - [x] Wszystkie wymagania spełnione (100%)
-- [x] Kod w pełni skomentowany
-- [x] Dokumentacja kompletna
-- [x] Testy wykonane
-- [x] Przykłady dołączone
-- [x] Dwie wersje dostępu (CLI + Web)
+- [x] Kod zoptymalizowany (usunięto duplikaty)
+- [x] Dokumentacja zaktualizowana
+- [x] Kompatybilność Windows/Mac/Linux
+- [x] Testy wykonane na obu systemach
+- [x] 10 przykładów CSV dołączonych
+- [x] Interfejs z zakładkami
+- [x] Modalne okna potwierdzenia
 
 ---
 
-## 🎉 Powodzenia w Konkursie!
+## 🎉 Miłego Użytkowania!
 
-**Data przygotowania:** 7 października 2025  
-**Wersja:** 1.0 - Gotowa do zgłoszenia  
-**Zgodność z wymaganiami:** 100% (21/21)  
-**Dokumentacja:** 1515 linii
+**Data:** 7 października 2025  
+**Wersja:** 2.0 - Finalna  
+**Zgodność:** 100% (21/21)  
+**Kompatybilność:** ✅ Windows ✅ macOS ✅ Linux
 
 ---
 
-**Możesz śmiało zgłosić to rozwiązanie! Wszystko działa! 🚀**
-
+**Aplikacja jest w pełni funkcjonalna i gotowa do użycia! 🚀**
