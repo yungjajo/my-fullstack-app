@@ -10,3 +10,10 @@ dist/
 __pycache__/
 .DS_Store
 *.log
+
+# Pliki tymczasowe Python
+python-scripts/dane_transakcji.csv
+python-scripts/flows_params.json
+python-scripts/przeplywy_finansowe.svg
+python-scripts/wykres_przeplywow.svg
+backend/uploads/
