@@ -663,18 +663,3 @@ npm run test:watch
 | **RAZEM** | **35** | ✅ **PASS** | ~70% |
 
 ---
-
-## 📄 Licencja
-
-Projekt edukacyjny - wykorzystanie zgodnie z regulaminem konkursu.
-
-**Autor:** Aplikacja Fullstack - Wizualizacja Przepływów Finansowych  
-**Data:** Październik 2025  
-**Wersja:** 2.0  
-**Status:** ✅ Produkcyjna
-
----
-
-### 🎉 Gotowe!
-
-Aplikacja jest w pełni funkcjonalna, przetestowana (35 testów!) i gotowa do użycia. Miłego testowania! 🚀
