@@ -26,7 +26,9 @@ if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
 
-// ...istniejący kod...
+// CORS configuration - MUSI BYĆ PRZED ENDPOINTAMI!
+app.use(cors());
+app.use(express.json());
 
 // Endpoint do pobierania listy podmiotów z pliku CSV
 app.get('/api/entities/:filename', async (req, res) => {
@@ -64,10 +66,6 @@ app.get('/api/entities/:filename', async (req, res) => {
   }
 });
 
-// CORS configuration
-app.use(cors());
-app.use(express.json());
-
 // Multer configuration dla przechowywania plików
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -87,7 +85,7 @@ const upload = multer({
 // Funkcja do uruchamiania skryptu Python
 async function runPythonScript(filePath: string): Promise<string> {
   const scriptPath = path.join(__dirname, '../../python-scripts/process_file.py');
-  const command = `python ${scriptPath} "${filePath}"`;
+  const command = `python3 ${scriptPath} "${filePath}"`;
   
   try {
     const { stdout, stderr } = await execAsync(command);
@@ -197,7 +195,7 @@ app.post('/api/flows', async (req, res) => {
     fs.writeFileSync(paramsPath, JSON.stringify(params));
 
     // Uruchom flows.py
-    const command = `python "${scriptPath}"`;
+    const command = `python3 "${scriptPath}"`;
     const { stdout, stderr } = await execAsync(command);
     if (stderr) {
       console.error('Python stderr:', stderr);

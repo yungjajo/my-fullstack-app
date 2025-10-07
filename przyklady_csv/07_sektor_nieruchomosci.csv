@@ -1,0 +1,12 @@
+Nadawca,Odbiorca,Kwota,Data,Opis
+Inwestor Prywatny,Deweloper Mieszkaniowy,3500000.00,2024-01-10,Kapitał na projekt
+Bank Hipoteczny,Deweloper Mieszkaniowy,8000000.00,2024-01-15,Kredyt deweloperski
+Deweloper Mieszkaniowy,Firma Budowlana,5200000.00,2024-01-20,Budowa osiedla - etap 1
+Deweloper Mieszkaniowy,Architekt,180000.00,2024-01-25,Projekt architektoniczny
+Deweloper Mieszkaniowy,Geodeta,45000.00,2024-02-01,Usługi geodezyjne
+Klienci - Mieszkania,Deweloper Mieszkaniowy,2800000.00,2024-03-01,Rezerwacje mieszkań
+Deweloper Mieszkaniowy,Firma Budowlana,4800000.00,2024-03-05,Budowa osiedla - etap 2
+Klienci - Mieszkania,Deweloper Mieszkaniowy,3200000.00,2024-04-01,Wpłaty na mieszkania
+Deweloper Mieszkaniowy,Bank Hipoteczny,500000.00,2024-04-10,Spłata kredytu - rata 1
+Klienci - Mieszkania,Bank Hipoteczny,2400000.00,2024-05-01,Kredyty hipoteczne
+

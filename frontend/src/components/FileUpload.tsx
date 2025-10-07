@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
@@ -116,9 +116,9 @@ export default function FileUpload() {
   };
 
   // Fetch files on component mount
-  useState(() => {
+  useEffect(() => {
     fetchFiles();
-  });
+  }, []);
 
   // Pobierz podmioty do filtrów
   const fetchEntities = async (filename: string) => {

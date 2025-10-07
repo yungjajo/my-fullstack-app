@@ -1,0 +1,13 @@
+Nadawca,Odbiorca,Kwota,Data,Opis
+Hurtownia Centralna,Sklep Warszawa,125000.00,2024-01-05,Dostawa produktów
+Hurtownia Centralna,Sklep Kraków,98000.00,2024-01-05,Dostawa produktów
+Hurtownia Centralna,Sklep Wrocław,87000.00,2024-01-05,Dostawa produktów
+Hurtownia Centralna,Sklep Poznań,76000.00,2024-01-05,Dostawa produktów
+Sklep Warszawa,Klienci,156000.00,2024-01-31,Sprzedaż detaliczna
+Sklep Kraków,Klienci,118000.00,2024-01-31,Sprzedaż detaliczna
+Sklep Wrocław,Klienci,102000.00,2024-01-31,Sprzedaż detaliczna
+Sklep Poznań,Klienci,89000.00,2024-01-31,Sprzedaż detaliczna
+Hurtownia Centralna,Sklep Warszawa,132000.00,2024-02-05,Dostawa produktów
+Hurtownia Centralna,Sklep Kraków,105000.00,2024-02-05,Dostawa produktów
+Sklep Warszawa,Hurtownia Centralna,12000.00,2024-02-15,Zwrot wadliwych
+
