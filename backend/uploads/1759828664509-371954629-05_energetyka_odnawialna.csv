@@ -1,0 +1,12 @@
+Nadawca,Odbiorca,Kwota,Data,Opis
+Bank Inwestycyjny,Deweloper OZE,5000000.00,2024-01-05,Finansowanie farmy wiatrowej
+Fundusz Zielony,Deweloper OZE,2000000.00,2024-01-10,Grant rozwojowy
+Deweloper OZE,Producent Turbin,3200000.00,2024-01-20,Zakup 10 turbin wiatrowych
+Deweloper OZE,Firma Budowlana,1800000.00,2024-01-25,Budowa fundamentów
+Deweloper OZE,Dostawca Energii,450000.00,2024-02-01,Przyłącze do sieci
+Farma Wiatrowa,Operator Sieci,280000.00,2024-03-01,Energia - marzec
+Operator Sieci,Zakłady Przemysłowe,180000.00,2024-03-01,Dostawy energii
+Operator Sieci,Gospodarstwa Domowe,100000.00,2024-03-01,Dostawy energii
+Farma Wiatrowa,Operator Sieci,320000.00,2024-04-01,Energia - kwiecień
+Farma Wiatrowa,Bank Inwestycyjny,250000.00,2024-04-15,Spłata kredytu - rata 1
+

@@ -1,0 +1,13 @@
+Nadawca,Odbiorca,Kwota,Data,Opis
+Sprzedawca Elektronika,Platforma E-commerce,450000.00,2024-01-15,Sprzedaż telefonów - styczeń
+Sprzedawca Moda,Platforma E-commerce,380000.00,2024-01-15,Sprzedaż odzieży - styczeń
+Sprzedawca AGD,Platforma E-commerce,290000.00,2024-01-15,Sprzedaż AGD - styczeń
+Platforma E-commerce,Klienci Końcowi,1150000.00,2024-01-31,Płatności od klientów
+Platforma E-commerce,Sprzedawca Elektronika,405000.00,2024-02-05,Prowizja 10% odliczona
+Platforma E-commerce,Sprzedawca Moda,342000.00,2024-02-05,Prowizja 10% odliczona
+Platforma E-commerce,Sprzedawca AGD,261000.00,2024-02-05,Prowizja 10% odliczona
+Platforma E-commerce,Firma Kurierska,58000.00,2024-02-10,Koszty dostawy
+Platforma E-commerce,Payment Gateway,23000.00,2024-02-10,Opłaty transakcyjne
+Sprzedawca Elektronika,Platforma E-commerce,520000.00,2024-02-15,Sprzedaż - luty
+Klienci Końcowi,Platforma E-commerce,15000.00,2024-02-20,Zwroty produktów
+

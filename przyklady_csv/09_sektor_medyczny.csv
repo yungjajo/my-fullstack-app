@@ -1,0 +1,12 @@
+Nadawca,Odbiorca,Kwota,Data,Opis
+NFZ,Szpital Wojewódzki,1200000.00,2024-01-05,Ryczałt miesięczny - styczeń
+Prywatni Pacjenci,Szpital Wojewódzki,180000.00,2024-01-31,Usługi komercyjne
+Szpital Wojewódzki,Hurtownia Farmaceutyczna,280000.00,2024-01-15,Leki i materiały medyczne
+Szpital Wojewódzki,Laboratorium Diagnostyczne,95000.00,2024-01-20,Badania laboratoryjne
+Szpital Wojewódzki,Dostawca Sprzętu,350000.00,2024-01-25,Aparatura medyczna
+Szpital Wojewódzki,Firma Sprzątająca,45000.00,2024-01-30,Usługi sanitarne
+Szpital Wojewódzki,Pracownicy,520000.00,2024-01-31,Wypłaty wynagrodzeń
+NFZ,Szpital Wojewódzki,1200000.00,2024-02-05,Ryczałt miesięczny - luty
+Prywatni Pacjenci,Szpital Wojewódzki,195000.00,2024-02-28,Usługi komercyjne
+Szpital Wojewódzki,Hurtownia Farmaceutyczna,310000.00,2024-02-15,Leki i materiały
+
