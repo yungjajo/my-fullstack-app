@@ -1,0 +1,12 @@
+Nadawca,Odbiorca,Kwota,Data,Opis
+Producent Stali,Fabryka Części,250000.00,2024-01-05,Surowce - stal nierdzewna
+Producent Aluminium,Fabryka Części,180000.00,2024-01-08,Surowce - aluminium
+Fabryka Części,Montownia Samochodów,420000.00,2024-01-15,Komponenty podwozia
+Fabryka Części,Montownia Samochodów,380000.00,2024-01-20,Komponenty silnika
+Producent Elektroniki,Montownia Samochodów,150000.00,2024-01-12,Systemy elektroniczne
+Montownia Samochodów,Salon Dealerski,980000.00,2024-02-01,Gotowe pojazdy - partia 1
+Montownia Samochodów,Salon Dealerski,920000.00,2024-02-15,Gotowe pojazdy - partia 2
+Salon Dealerski,Klienci Detaliczni,1850000.00,2024-02-28,Sprzedaż pojazdów
+Klienci Detaliczni,Salon Dealerski,45000.00,2024-03-10,Serwis i części zamienne
+Producent Stali,Fabryka Części,270000.00,2024-03-05,Surowce - dodatkowa partia
+
