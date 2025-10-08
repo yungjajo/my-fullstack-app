@@ -17,6 +17,13 @@ interface FileStats {
   transactions: number;
 }
 
+interface RegistryStats {
+  documentCount: number;
+  entityCount: number;
+  dateFrom: string | null;
+  dateTo: string | null;
+}
+
 export default function FileUpload() {
   const [activeTab, setActiveTab] = useState<'diagram' | 'registry'>('diagram');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -36,17 +43,38 @@ export default function FileUpload() {
   const [fileToDelete, setFileToDelete] = useState<string | null>(null);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [fileInfo, setFileInfo] = useState<any>(null);
+  
+  // Registry statistics
+  const [registryStats, setRegistryStats] = useState<RegistryStats | null>(null);
 
   useEffect(() => {
-    fetchFiles();
+    fetchFiles(); // Pobiera pliki i statystyki w jednym requeście
   }, []);
 
-  const fetchFiles = async () => {
+  const fetchFiles = async (retries = 3, delay = 1000) => {
     try {
       const response = await axios.get(`${API_URL}/api/files`);
       setFiles(response.data.files);
+      
+      // Ustaw statystyki rejestru jeśli są dostępne
+      if (response.data.stats) {
+        setRegistryStats(response.data.stats);
+      }
+      
+      setError(''); // Wyczyść błąd jeśli sukces
     } catch (err) {
       console.error('Error fetching files:', err);
+      
+      // Jeśli to błąd połączenia i mamy jeszcze próby, spróbuj ponownie
+      if (retries > 0 && axios.isAxiosError(err) && !err.response) {
+        console.log(`Retrying... (${retries} attempts left)`);
+        setTimeout(() => fetchFiles(retries - 1, delay), delay);
+      } else {
+        // Pokaż błąd tylko jeśli wszystkie próby się nie powiodły
+        if (retries === 0) {
+          setError('Nie można połączyć się z backendem. Sprawdź czy backend działa na http://localhost:3001');
+        }
+      }
     }
   };
 
@@ -76,7 +104,7 @@ export default function FileUpload() {
         },
       });
 
-      fetchFiles();
+      fetchFiles(); // Odśwież pliki i statystyki
       setSelectedFile(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -103,7 +131,7 @@ export default function FileUpload() {
     
     try {
       await axios.delete(`${API_URL}/api/files/${fileToDelete}`);
-      fetchFiles();
+      fetchFiles(); // Odśwież pliki i statystyki
       setShowDeleteModal(false);
       setFileToDelete(null);
       setChartSVG(''); // Wyczyść diagram
@@ -256,6 +284,14 @@ export default function FileUpload() {
                   </button>
                 </div>
               </div>
+              
+              {/* Informacja o zakresie dat w rejestrze */}
+              {registryStats && registryStats.dateFrom && registryStats.dateTo && (
+                <div className="mt-3 text-sm text-gray-600 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
+                  ℹ️ Rejestr zawiera dane z okresu od <span className="font-semibold text-blue-700">{registryStats.dateFrom}</span> do <span className="font-semibold text-blue-700">{registryStats.dateTo}</span>
+                </div>
+              )}
+              
               {dateRange.from || dateRange.to ? (
                 <button
                   onClick={() => {
@@ -365,13 +401,25 @@ export default function FileUpload() {
             {/* Statystyki i upload */}
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6 mb-6 border border-purple-200">
               <div className="flex items-center justify-between mb-4">
-                <div>
+                <div className="w-full">
                   <h3 className="text-lg font-semibold text-gray-900">
                     📊 Statystyki Rejestru
                   </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Aktualnie w rejestrze: <span className="font-bold text-blue-600">{files.length}</span> dokument(ów)
-                  </p>
+                  <div className="mt-2 space-y-1">
+                    <p className="text-sm text-gray-600">
+                      Aktualnie w rejestrze: <span className="font-bold text-blue-600">{registryStats?.documentCount || 0}</span> dokument(ów)
+                    </p>
+                    {registryStats && registryStats.entityCount > 0 && (
+                      <p className="text-sm text-gray-600">
+                        Liczba firm: <span className="font-bold text-green-600">{registryStats.entityCount}</span>
+                      </p>
+                    )}
+                    {registryStats && registryStats.dateFrom && registryStats.dateTo && (
+                      <p className="text-sm text-gray-600">
+                        Zakres dat: <span className="font-bold text-purple-600">{registryStats.dateFrom}</span> do <span className="font-bold text-purple-600">{registryStats.dateTo}</span>
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 

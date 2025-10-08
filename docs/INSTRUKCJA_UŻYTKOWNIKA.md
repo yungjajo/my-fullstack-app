@@ -214,11 +214,19 @@ http://localhost:3000
 
 #### **Zakładka "Rejestr Dokumentów Finansowych"**
 
+**Statystyki Rejestru** (wyświetlane na górze):
+   - **Liczba dokumentów** - Ile plików CSV jest w rejestrze
+   - **Liczba firm** - Ile unikalnych podmiotów (Nadawców + Odbiorców)
+   - **Zakres dat** - Najstarsza i najnowsza data transakcji w rejestrze
+   
+   *Statystyki aktualizują się automatycznie po dodaniu lub usunięciu pliku.*
+
 1. **Dodawanie dokumentu:**
    - Kliknij "Wybierz plik"
    - Wybierz plik CSV z dysku (lub z folderu `przyklady_csv/`)
    - Kliknij "Wyślij"
    - Plik zostanie automatycznie przetworzony
+   - Statystyki rejestru zaktualizują się
 
 2. **Przeglądanie dokumentów:**
    - Lista wszystkich wgranych plików
@@ -244,8 +252,17 @@ http://localhost:3000
    - Zobaczysz komunikat: "Brak dokumentów do przetwarzania..."
    - Kliknij przycisk "Przejdź do zakładki Rejestr dokumentów..."
 
-2. **Generowanie diagramu:**
+2. **Informacja o zakresie dat:**
+   - Pod polami wyboru dat zobaczysz niebieską ramkę z informacją:
+   - **"ℹ️ Rejestr zawiera dane z okresu od [DATA_OD] do [DATA_DO]"**
+   - To pomoże Ci wiedzieć w jakich zakresach możesz filtrować dane
+   - Zakres aktualizuje się automatycznie gdy dodajesz/usuwasz pliki
+
+3. **Generowanie diagramu:**
    - **(Opcjonalnie)** Ustaw datę początkową i końcową
+     - Użyj zakresu dat pokazanego w informacji powyżej
+     - Przykład: Jeśli rejestr zawiera dane od 2024-01-05 do 2024-05-01,
+       możesz filtrować np. od 2024-02-01 do 2024-03-31
    - **(Opcjonalnie)** Wybierz konkretne podmioty z listy
    - Kliknij **"Wygeneruj Diagram"**
    - Wykres Sankey pojawi się poniżej
@@ -303,10 +320,14 @@ FILTER_DATE_TO = '2024-06-30'
 ```
 
 **Aplikacja Webowa:**
-1. W zakładce "Diagram Przepływów"
-2. Ustaw "Data od": 2024-01-01
-3. Ustaw "Data do": 2024-06-30
+1. W zakładce "Diagram Przepływów" sprawdź informację o zakresie:
+   - Zobaczysz: "ℹ️ Rejestr zawiera dane z okresu od 2024-01-05 do 2024-05-01"
+   - To znaczy że możesz filtrować tylko w tym zakresie
+2. Ustaw "Data od": 2024-01-05 (lub późniejsza)
+3. Ustaw "Data do": 2024-05-01 (lub wcześniejsza)
 4. Kliknij "Wygeneruj Diagram"
+
+**💡 Wskazówka:** Jeśli ustawisz daty poza dostępnym zakresem, diagram może być pusty lub pokazywać tylko część danych.
 
 ### Przykład 4: Kombinacja filtrów
 
@@ -322,6 +343,36 @@ FILTER_DATE_TO = '2024-03-31'
 1. Zaznacz firmy: Firma A, Firma B
 2. Ustaw daty: 2024-03-01 do 2024-03-31
 3. Kliknij "Wygeneruj Diagram"
+
+### Przykład 5: Wykorzystanie Statystyk Rejestru (NOWE!)
+
+**Scenariusz:** Chcesz wygenerować raport kwartalny (Q1 2024)
+
+1. **Otwórz zakładkę "Rejestr Dokumentów"**
+   - Sprawdź statystyki:
+     ```
+     📊 Statystyki Rejestru
+     Aktualnie w rejestrze: 8 dokument(ów)
+     Liczba firm: 43
+     Zakres dat: 2024-01-05 do 2024-05-01
+     ```
+   - Teraz wiesz że:
+     - Masz dane od stycznia do maja
+     - W rejestrze jest 43 różne firmy
+     - Q1 (styczeń-marzec) jest w pełni dostępny
+
+2. **Przejdź do zakładki "Diagram Przepływów"**
+   - Zobaczysz informację: "Rejestr zawiera dane z okresu od 2024-01-05 do 2024-05-01"
+   - Ustaw filtry dla Q1:
+     - Data od: 2024-01-05
+     - Data do: 2024-03-31
+   - Kliknij "Wygeneruj Diagram"
+
+3. **Wynik:**
+   - Diagram pokaże tylko transakcje z Q1
+   - Podsumowanie pokaże ile firm i transakcji było w tym okresie
+
+**💡 Wskazówka:** Statystyki pomagają Ci zrozumieć jakie dane masz dostępne ZANIM zaczniesz filtrować!
 
 ---
 
@@ -613,9 +664,3 @@ if MIN_AMOUNT:
 - [ ] Wykres SVG wygenerowany i widoczny
 
 ---
-
-**Powodzenia w analizie przepływów finansowych! 📊💰**
-
-**Wersja:** 2.0 (Finalna)  
-**Data:** 7 października 2025  
-**Status:** ✅ Kompletna instrukcja

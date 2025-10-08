@@ -136,23 +136,163 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-// Get all uploaded files
+// Get all uploaded files with registry statistics
 app.get('/api/files', (req, res) => {
+  console.log('📁 GET /api/files called');
   try {
-    const files = fs.readdirSync(UPLOAD_DIR)
-      .filter(file => file !== '.gitkeep')
-      .map(filename => {
-        const filePath = path.join(UPLOAD_DIR, filename);
-        const stats = fs.statSync(filePath);
-        return {
-          filename,
-          size: stats.size,
-          uploadedAt: stats.birthtime
-        };
-      });
+    const allFiles = fs.readdirSync(UPLOAD_DIR).filter(file => file !== '.gitkeep');
+    const csvFiles = allFiles.filter(file => file.endsWith('.csv'));
+    console.log(`Found ${allFiles.length} files, ${csvFiles.length} CSV files`);
     
-    res.json({ files });
+    const files = allFiles.map(filename => {
+      const filePath = path.join(UPLOAD_DIR, filename);
+      const stats = fs.statSync(filePath);
+      return {
+        filename,
+        size: stats.size,
+        uploadedAt: stats.birthtime
+      };
+    });
+
+    // Oblicz statystyki rejestru
+    const allEntities = new Set<string>();
+    const allDates: Date[] = [];
+
+    csvFiles.forEach(filename => {
+      try {
+        const filePath = path.join(UPLOAD_DIR, filename);
+        const csvContent = fs.readFileSync(filePath, 'utf-8');
+        const lines = csvContent.split(/\r?\n/).filter(line => line.trim());
+        
+        if (lines.length < 2) return;
+        
+        const header = lines[0].split(',');
+        const nadawcaIdx = header.findIndex(h => h.toLowerCase().includes('nadawca'));
+        const odbiorcaIdx = header.findIndex(h => h.toLowerCase().includes('odbiorca'));
+        const dataIdx = header.findIndex(h => h.toLowerCase().includes('data'));
+        
+        for (let i = 1; i < lines.length; i++) {
+          const row = lines[i].split(',');
+          
+          if (nadawcaIdx >= 0 && row[nadawcaIdx]) {
+            allEntities.add(row[nadawcaIdx].trim());
+          }
+          if (odbiorcaIdx >= 0 && row[odbiorcaIdx]) {
+            allEntities.add(row[odbiorcaIdx].trim());
+          }
+          
+          if (dataIdx >= 0 && row[dataIdx]) {
+            const dateStr = row[dataIdx].trim();
+            const date = new Date(dateStr);
+            if (!isNaN(date.getTime())) {
+              allDates.push(date);
+            }
+          }
+        }
+      } catch (err) {
+        console.error(`Error processing CSV file ${filename}:`, err);
+      }
+    });
+
+    let dateFrom = null;
+    let dateTo = null;
+    
+    if (allDates.length > 0) {
+      allDates.sort((a, b) => a.getTime() - b.getTime());
+      dateFrom = allDates[0].toISOString().split('T')[0];
+      dateTo = allDates[allDates.length - 1].toISOString().split('T')[0];
+    }
+
+    const responseData = { 
+      files,
+      stats: {
+        documentCount: csvFiles.length,
+        entityCount: allEntities.size,
+        dateFrom,
+        dateTo
+      }
+    };
+    
+    console.log(`Sending response with ${files.length} files and stats:`, responseData.stats);
+    res.json(responseData);
   } catch (error: any) {
+    console.error('Error in /api/files:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get registry statistics
+app.get('/api/registry-stats', (req, res) => {
+  console.log('📊 Registry stats endpoint called!');
+  try {
+    const csvFiles = fs.readdirSync(UPLOAD_DIR)
+      .filter(file => file !== '.gitkeep' && file.endsWith('.csv'));
+    
+    if (csvFiles.length === 0) {
+      return res.json({
+        documentCount: 0,
+        entityCount: 0,
+        dateFrom: null,
+        dateTo: null
+      });
+    }
+
+    const allEntities = new Set<string>();
+    const allDates: Date[] = [];
+
+    csvFiles.forEach(filename => {
+      try {
+        const filePath = path.join(UPLOAD_DIR, filename);
+        const csvContent = fs.readFileSync(filePath, 'utf-8');
+        const lines = csvContent.split(/\r?\n/).filter(line => line.trim());
+        
+        if (lines.length < 2) return;
+        
+        const header = lines[0].split(',');
+        const nadawcaIdx = header.findIndex(h => h.toLowerCase().includes('nadawca'));
+        const odbiorcaIdx = header.findIndex(h => h.toLowerCase().includes('odbiorca'));
+        const dataIdx = header.findIndex(h => h.toLowerCase().includes('data'));
+        
+        for (let i = 1; i < lines.length; i++) {
+          const row = lines[i].split(',');
+          
+          if (nadawcaIdx >= 0 && row[nadawcaIdx]) {
+            allEntities.add(row[nadawcaIdx].trim());
+          }
+          if (odbiorcaIdx >= 0 && row[odbiorcaIdx]) {
+            allEntities.add(row[odbiorcaIdx].trim());
+          }
+          
+          if (dataIdx >= 0 && row[dataIdx]) {
+            const dateStr = row[dataIdx].trim();
+            const date = new Date(dateStr);
+            if (!isNaN(date.getTime())) {
+              allDates.push(date);
+            }
+          }
+        }
+      } catch (err) {
+        console.error(`Error processing file ${filename}:`, err);
+      }
+    });
+
+    let dateFrom = null;
+    let dateTo = null;
+    
+    if (allDates.length > 0) {
+      allDates.sort((a, b) => a.getTime() - b.getTime());
+      dateFrom = allDates[0].toISOString().split('T')[0];
+      dateTo = allDates[allDates.length - 1].toISOString().split('T')[0];
+    }
+
+    res.json({
+      documentCount: csvFiles.length,
+      entityCount: allEntities.size,
+      dateFrom,
+      dateTo
+    });
+  } catch (error: any) {
+    console.error('Registry stats error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -172,7 +312,6 @@ app.delete('/api/files/:filename', (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
 
 // Endpoint do generowania wykresu przepływów finansowych
 app.post('/api/flows', async (req, res) => {
