@@ -4,22 +4,42 @@
 import json
 import os
 import csv
+import sys
+import base64
+import argparse
 from datetime import datetime
 from collections import defaultdict
 
-def load_params():
-    """Wczytuje parametry z pliku JSON"""
-    params_path = os.path.join(os.path.dirname(__file__), 'flows_params.json')
-    if not os.path.exists(params_path):
+def get_params_from_args():
+    """Wczytuje parametry z argumentów linii poleceń"""
+    parser = argparse.ArgumentParser(description='Generuje diagram przepływów finansowych.')
+    parser.add_argument('params_base64', type=str, help='Parametry w formacie JSON zakodowane w Base64')
+
+    # Sprawdź, czy przekazano argumenty, jeśli nie, użyj wartości domyślnych
+    if len(sys.argv) < 2:
         return {
             'csv_path': '',
             'entities': [],
             'from': '',
             'to': ''
         }
+
+    args = parser.parse_args()
     
-    with open(params_path, 'r', encoding='utf-8') as f:
-        return json.load(f)
+    # Dekoduj Base64 i wczytaj JSON
+    try:
+        decoded_params = base64.b64decode(args.params_base64)
+        params = json.loads(decoded_params)
+        return params
+    except (json.JSONDecodeError, TypeError) as e:
+        print(f"Błąd w przetwarzaniu parametrów: {e}")
+        # Zwróć domyślne wartości w przypadku błędu
+        return {
+            'csv_path': '',
+            'entities': [],
+            'from': '',
+            'to': ''
+        }
 
 def parse_csv(csv_path):
     """Parsuje plik CSV i zwraca dane przepływów"""
@@ -241,7 +261,7 @@ def generate_empty_svg():
 def main():
     """Główna funkcja generująca wykres"""
     # Wczytaj parametry
-    params = load_params()
+    params = get_params_from_args()
     
     csv_path = params.get('csv_path', '')
     entities = params.get('entities', [])

@@ -19,7 +19,7 @@ const __dirname = path.dirname(__filename);
 const execAsync = promisify(exec);
 const app = express();
 const PORT = process.env.PORT || 3001;
-const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads';
+export const UPLOAD_DIR = process.env.UPLOAD_DIR || (process.env.NODE_ENV === 'test' ? path.join(__dirname, '../..', 'uploads_test') : './uploads');
 
 // Wykryj system operacyjny i wybierz odpowiednią komendę Python
 // Na Windows: python, na Mac/Linux: python3
@@ -327,21 +327,27 @@ app.post('/api/flows', async (req, res) => {
 
     // Przygotuj argumenty do flows.py
     const scriptPath = path.join(__dirname, '../../python-scripts/flows.py');
-    // Zapisz parametry do pliku tymczasowego (np. JSON), bo flows.py nie przyjmuje argumentów
     const params = {
       csv_path: filePath,
       entities,
       from,
       to
     };
-    const paramsPath = path.join(__dirname, '../../python-scripts/flows_params.json');
-    fs.writeFileSync(paramsPath, JSON.stringify(params));
 
-    // Uruchom flows.py
-    const command = `${PYTHON_CMD} "${scriptPath}"`;
-    const { stdout, stderr } = await execAsync(command);
-    if (stderr) {
-      console.error('Python stderr:', stderr);
+    // Serializuj i zakoduj parametry w Base64
+    const paramsJson = JSON.stringify(params);
+    const paramsBase64 = Buffer.from(paramsJson).toString('base64');
+
+    // Uruchom flows.py z zakodowanymi parametrami
+    const command = `${PYTHON_CMD} "${scriptPath}" "${paramsBase64}"`;
+    if (process.env.NODE_ENV === 'test') {
+      const { execSync } = await import('child_process');
+      execSync(command);
+    } else {
+      const { stdout, stderr } = await execAsync(command);
+      if (stderr) {
+        console.error('Python stderr:', stderr);
+      }
     }
 
     // Odczytaj wygenerowany plik SVG
@@ -358,6 +364,11 @@ app.post('/api/flows', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Backend server running on http://localhost:${PORT}`);
-});
+// Uruchom serwer tylko jeśli plik jest uruchamiany bezpośrednio
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Backend server running on http://localhost:${PORT}`);
+  });
+}
+
+export { app };
